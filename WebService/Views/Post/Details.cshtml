@@ -1,0 +1,211 @@
+﻿@model Entities.Post;
+@{
+    ViewData["Title"] = "Details";
+    Layout = "_LayoutAuthorized";
+}
+
+
+
+@{
+    if (!Model.Equals(null))
+    {
+        <!-- Page Content -->
+        <div class="container">
+
+            <div class="row">
+
+                <!-- Post Content Column -->
+                <div class="col-lg-8">
+
+                    <!-- Title -->
+                    <h1 class="mt-4">@Model?.Title</h1>
+
+                    <!-- Author -->
+                    <p class="lead">
+                        by
+                        <a href="@Url.Action("Index", "Profile", new { id=Model.UserId })">@Model?.Username</a>
+                    </p>
+
+                    <hr>
+
+                    <!-- Date/Time -->
+                    <div class="d-flex">
+                        <p class="float-left m-auto">Posted on @Model?.CreatedAt</p>
+                        <p class="float-right m-auto">Category: @Model?.PostType</p>
+                    </div>
+
+
+                    <hr>
+
+                    <!-- Preview Image -->
+                    <img class="img-fluid rounded" src="http://placehold.it/900x300" alt="">
+
+                    <hr>
+
+                    <!-- Post Content -->
+                    <p class="lead">
+                        @Model?.Description
+                    </p>
+
+                    <hr>
+
+                    <!-- Comments Form -->
+                    <div class="card my-4">
+                        <h5 class="card-header">Leave a Comment:</h5>
+                        <div class="card-body">
+                            <form id="commentSubmitForm">
+                                <div class="form-group">
+                                    <textarea id="commentText" class="form-control" rows="3"></textarea>
+                                </div>
+                                <button id="commentSubmitBtn" type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    @{
+                        var reversedComments = Model.Comments;
+                        reversedComments.Reverse();
+                        foreach (var comment in reversedComments)
+                        {
+                            <div class="media mb-4">
+                                <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
+                                <div class="media-body">
+                                    <h5 class="mt-0">@comment.Username</h5>
+                                    @comment.Description
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Sidebar Widgets Column -->
+                <div class="col-md-4">
+
+                    <!-- Search Widget -->
+                    <div class="card my-4">
+                        <h5 class="card-header">Search</h5>
+                        <div class="card-body">
+                            <div class="input-group">
+                                <input id="searchKey" type="text" class="form-control" placeholder="Search for...">
+                                <span class="input-group-append">
+                                    <button id="searchButton" class="btn btn-secondary" type="button">Go!</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories Widget -->
+                    <div class="card my-4">
+                        <h5 class="card-header">Categories</h5>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <ul class="list-unstyled mb-0">
+                                        <li>
+                                            <a href="@Url.Action("Index", "Post", new { postType="Javascript"})">Javascript</a>
+                                        </li>
+                                        <li>
+                                            <a href="@Url.Action("Index", "Post", new { postType="HTML"})">HTML</a>
+                                        </li>
+                                        <li>
+                                            <a href="@Url.Action("Index", "Post", new { postType="C#"})">C#</a>
+                                        </li>
+                                        <li>
+                                            <a href="@Url.Action("Index", "Post", new { postType="Java"})">Java</a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <ul class="list-unstyled mb-0">
+                                        <li>
+                                            <a href="@Url.Action("Index", "Post", new { postType="Python"})">Python</a>
+                                        </li>
+                                        <li>
+                                            <a href="@Url.Action("Index", "Post", new { postType="C"})">C</a>
+                                        </li>
+                                        <li>
+                                            <a href="@Url.Action("Index", "Post", new { postType="C++"})">C++</a>
+                                        </li>
+                                        <li>
+                                            <a href="@Url.Action("Index", "Post", new { postType="Rubby"})">Rubby</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Side Widget -->
+                    <div class="card my-4">
+                        <h5 class="card-header">Side Widget</h5>
+                        <div class="card-body">
+                            You can put anything you want inside of these side widgets. They are easy to use, and feature the new Bootstrap 4 card containers!
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- /.row -->
+
+        </div>
+        <!-- /.container -->
+
+    }
+    else
+    {
+        <div class="container m-auto">
+            <h1>No Post Found</h1>
+        </div>
+    }
+}
+
+<script>
+    $(document).ready(function () {
+
+
+        $('#searchButton').click(function () {
+            var key = $('#searchKey').val();
+            var url = '@Url.Action("Index", "Post")' + '?searchKey=' + key;
+            alert(url);
+            if (key !== null && key !== undefined) {
+                location.replace(url);
+            }
+        });
+
+
+        $("#commentSubmitForm").on("submit", function(event){
+            event.preventDefault();
+            var comment = $('#commentText').val();
+            if (comment === null || comment === undefined || comment === '') {
+                alert("Empty Input");
+                return;
+            }
+            var url = '@Url.Action("Comment", "Post")';
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    Comment: comment,
+                    PostId: "@Model.Id"
+                },
+                success: function (data) {
+                    if (data.status === "Ok") {
+                        alert("ajax worked");
+                        location.reload();
+                    } else {
+                        alert("ajax failed");
+                    }
+                },
+                error: function(data) {
+                    console.log(data);
+                    alert("ajax failed");
+                }
+            });
+        });
+    });
+
+</script>

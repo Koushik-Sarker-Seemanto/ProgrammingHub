@@ -1,0 +1,185 @@
+﻿@model DomainModels.ProfileViewModel;
+@{
+    ViewData["Title"] = "Posts";
+    Layout = "_LayoutAuthorized";
+}
+
+
+<style>
+    .max4line {
+        line-height: 18px;
+        height: 72px;
+        font-size: 18px;
+        overflow: hidden;
+    }
+
+    .deep-text {
+        font-weight: bold;
+    }
+</style>
+
+
+<!-- Page Content -->
+<div class="container">
+
+    <div class="row">
+
+        <!-- Blog Entries Column -->
+        <div class="col-md-8">
+
+            <div>
+                <div class="card mb-4" style="flex-direction: row">
+                    <div class="col-md-5">
+                        <img class="img-thumbnail" src="http://med.gov.bz/wp-content/uploads/2020/08/dummy-profile-pic.jpg" />
+                    </div>
+                    <div class="col-md-7">
+                        <div class="ml-2 p-4">
+                            <h3 class="deep-text">@Model.UserData.Name</h3>
+                            <p class="deep-text"><i class="fa fa-phone"></i> @Model.UserData.Phone</p>
+                            <p class="deep-text"><i class="fa fa-envelope"></i> @Model.UserData.Email</p>
+                            <p class="deep-text"><i class="fa fa-male"></i> @Model.UserData.Gender</p>
+                            @{
+                                if (Model.CurrentUser)
+                                {
+                                    <button class="btn btn-info"> Edit Profile</button>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-2 p-2 text-center" style="background: cadetblue">
+                <h3 class="deep-text">Posts</h3>
+            </div>
+
+            @if (Model?.Posts != null && Model.Posts.Any())
+            {
+                foreach (var post in Model?.Posts)
+                {
+                    <div class="card mb-4">
+                        <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+                        <div class="card-body">
+                            <h2 class="card-title">@post.Title</h2>
+                            <p class="card-text max4line">@post.Description</p>
+                            <a href="@Url.Action("Details", "Post", new {id = post.Id})" class="btn btn-primary">Read More &rarr;</a>
+                        </div>
+                        <div class="card-footer text-muted">
+                            Posted on @post.CreatedAt by
+                            <a href="#">@post.Username</a>
+                            <span class="float-right">@post.PostType</span>
+                        </div>
+                    </div>
+                }
+
+                <!-- Pagination -->
+                <ul class="pagination justify-content-center mb-4">
+                    <li class="page-item">
+                        <a class="page-link" href="#">&larr; Older</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Newer &rarr;</a>
+                    </li>
+                </ul>
+            }
+            else
+            {
+                <div style="height: 50vh">
+                    <div class="m-auto">
+                        <h1 class="text-center" style="line-height: 50vh">No Post Found</h1>
+                    </div>
+                </div>
+            }
+
+
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4">
+
+            <!-- Search Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">Search</h5>
+                <div class="card-body">
+                    <div class="input-group">
+                        <input id="searchKey" type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-append">
+                            <button id="searchButton" class="btn btn-secondary" type="button">Go!</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">Categories</h5>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <ul class="list-unstyled mb-0">
+                                <li>
+                                    <a href="@Url.Action("Index", "Post", new {postType = "Javascript"})">Javascript</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Post", new {postType = "HTML"})">HTML</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Post", new {postType = "C#"})">C#</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Post", new {postType = "Java"})">Java</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <ul class="list-unstyled mb-0">
+                                <li>
+                                    <a href="@Url.Action("Index", "Post", new {postType = "Python"})">Python</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Post", new {postType = "C"})">C</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Post", new {postType = "C++"})">C++</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Post", new {postType = "Rubby"})">Rubby</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">Side Widget</h5>
+                <div class="card-body">
+                    You can put anything you want inside of these side widgets. They are easy to use, and feature the new Bootstrap 4 card containers!
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+
+<script>
+    $(document).ready(function () {
+
+        $('#searchButton').click(function () {
+            var key = $('#searchKey').val();
+            var url = '@Url.Action("Index", "Post")' + '?searchKey=' + key;
+            alert(url);
+            if (key !== null && key !== undefined) {
+                location.replace(url);
+            }
+        });
+    });
+
+</script>
