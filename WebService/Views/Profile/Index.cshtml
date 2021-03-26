@@ -28,29 +28,65 @@
         <div class="col-md-8">
 
             <div>
-                <div class="card mb-4" style="flex-direction: row">
-                    <div class="col-md-5">
-                        <img class="img-thumbnail" src="http://med.gov.bz/wp-content/uploads/2020/08/dummy-profile-pic.jpg" />
-                    </div>
-                    <div class="col-md-7">
-                        <div class="ml-2 p-4">
-                            <h3 class="deep-text">@Model.UserData.Name</h3>
-                            <p class="deep-text"><i class="fa fa-phone"></i> @Model.UserData.Phone</p>
-                            <p class="deep-text"><i class="fa fa-envelope"></i> @Model.UserData.Email</p>
-                            <p class="deep-text"><i class="fa fa-male"></i> @Model.UserData.Gender</p>
+                <div class="card mb-4">
+                    <div class="row">
+                        <div class="col-md-5 mt-2 mb-2 pl-4 pr-4">
                             @{
-                                if (Model.CurrentUser)
+                                if (!string.IsNullOrEmpty(Model?.UserData?.ProfileImage))
                                 {
-                                    <button class="btn btn-info"> Edit Profile</button>
+                                    <img class="card-img-top" src="~/images/@Model?.UserData?.ProfileImage" alt="Card image cap">
+                                }
+                                else
+                                {
+                                    <img class="img-thumbnail" src="http://med.gov.bz/wp-content/uploads/2020/08/dummy-profile-pic.jpg" />
                                 }
                             }
+                        </div>
+                        <div class="col-md-7">
+                            <div class="ml-2 p-4">
+                                <h3 class="deep-text">@Model.UserData.Name</h3>
+                                <p class="deep-text"><i class="fa fa-phone"></i> @Model.UserData.Phone</p>
+                                <p class="deep-text"><i class="fa fa-envelope"></i> @Model.UserData.Email</p>
+                                <p class="deep-text"><i class="fa fa-male"></i> @Model.UserData.Gender</p>
+                                <p class="deep-text">
+                                    <img style="width: 16px; height: 16px" src="~/svg-icons/rating.svg">
+                                    <span style="color: darkorange">
+                                        @{
+                                            if (!string.IsNullOrEmpty(Model?.UserData?.Category) && Model.UserData.Category == "Noob")
+                                            {
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star-o"></i>
+                                                <i class="fa fa-star-o"></i>
+                                            }
+                                            else if (!string.IsNullOrEmpty(Model?.UserData?.Category) && Model.UserData.Category == "Medium")
+                                            {
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star-o"></i>
+                                            }
+                                            else if (!string.IsNullOrEmpty(Model?.UserData?.Category) && Model.UserData.Category == "Expert")
+                                            {
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                            }
+                                        }
+                                    </span>
+                                </p>
+                                @{
+                                    if (Model.CurrentUser)
+                                    {
+                                        <button class="btn btn-info"> Edit Profile</button>
+                                    }
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="card mb-2 p-2 text-center" style="background: cadetblue">
-                <h3 class="deep-text">Posts</h3>
+                <h4 class="deep-text">Posts</h4>
             </div>
 
             @if (Model?.Posts != null && Model.Posts.Any())
@@ -175,7 +211,6 @@
         $('#searchButton').click(function () {
             var key = $('#searchKey').val();
             var url = '@Url.Action("Index", "Post")' + '?searchKey=' + key;
-            alert(url);
             if (key !== null && key !== undefined) {
                 location.replace(url);
             }

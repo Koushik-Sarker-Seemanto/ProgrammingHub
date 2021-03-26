@@ -27,7 +27,16 @@
                 foreach (var post in Model)
                 {
                     <div class="card mb-4">
-                        <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+                        @{
+                            if (!string.IsNullOrEmpty(post?.PostCoverSmall))
+                            {
+                                <img class="card-img-top" src="~/images/@post.PostCoverSmall" alt="Card image cap">
+                            }
+                            else
+                            {
+                                <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+                            }
+                        }
                         <div class="card-body">
                             <h2 class="card-title">@post.Title</h2>
                             <p class="card-text max4line">@post.Description</p>
@@ -35,7 +44,29 @@
                         </div>
                         <div class="card-footer text-muted">
                             Posted on @post.CreatedAt by
-                            <a href="@Url.Action("Index", "Profile", new { id=post.UserId })">@post.Username</a>
+                            <a href="@Url.Action("Index", "Profile", new {id = post.UserId})">@post.Username</a>
+                            <span style="color: darkorange">
+                                @{
+                                    if (!string.IsNullOrEmpty(post?.ExpertLevel) && post.ExpertLevel == "Noob")
+                                    {
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star-o"></i>
+                                        <i class="fa fa-star-o"></i>
+                                    }
+                                    else if (!string.IsNullOrEmpty(post?.ExpertLevel) && post.ExpertLevel == "Medium")
+                                    {
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star-o"></i>
+                                    }
+                                    else if (!string.IsNullOrEmpty(post?.ExpertLevel) && post.ExpertLevel == "Expert")
+                                    {
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    }
+                                }
+                            </span>
                             <span class="float-right">@post.PostType</span>
                         </div>
                     </div>

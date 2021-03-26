@@ -17,6 +17,9 @@ namespace Entities
         public string Title { get; set; }
         [BsonRequired]
         public string PostType { get; set; }
+        public string ExpertLevel { get; set; }
+        public string PostCoverBig { get; set; }
+        public string PostCoverSmall { get; set; }
         [BsonRequired]
         public string Description { get; set; }
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]

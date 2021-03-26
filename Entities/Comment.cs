@@ -12,6 +12,7 @@ namespace Entities
         public Guid UserId { get; set; }
         [BsonRequired]
         public string Username { get; set; }
+        public string ExpertLevel { get; set; }
         [BsonRequired]
         public string Description { get; set; }
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]

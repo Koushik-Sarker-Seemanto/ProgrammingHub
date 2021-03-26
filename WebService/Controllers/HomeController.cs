@@ -31,6 +31,11 @@ namespace WebService.Controllers
             return View();
         }
 
+        public async Task<IActionResult> SalaryPrediction()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

@@ -91,6 +91,8 @@ namespace Services
                 Gender = model.Gender,
                 Phone = model.Phone,
                 Username = model.Username,
+                Category = model.Category,
+                ProfileImage = model.ProfileImage,
                 CreatedAt = DateTime.Now,
             };
 

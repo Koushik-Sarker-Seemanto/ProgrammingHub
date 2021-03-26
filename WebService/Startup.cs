@@ -62,6 +62,7 @@ namespace WebService
             services.AddSingleton<IMongoRepository, MongoRepository>();
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IPostService, PostService>();
+            services.AddSingleton<IUploadService, UploadService>();
 
 
             services.AddControllersWithViews();

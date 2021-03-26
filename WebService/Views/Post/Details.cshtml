@@ -23,7 +23,31 @@
                     <!-- Author -->
                     <p class="lead">
                         by
-                        <a href="@Url.Action("Index", "Profile", new { id=Model.UserId })">@Model?.Username</a>
+                        <a href="@Url.Action("Index", "Profile", new {id = Model.UserId})">
+                            @Model?.Username
+                        </a>
+                        <span style="color: darkorange">
+                            @{
+                                if (!string.IsNullOrEmpty(Model?.ExpertLevel) && Model.ExpertLevel == "Noob")
+                                {
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star-o"></i>
+                                    <i class="fa fa-star-o"></i>
+                                }
+                                else if (!string.IsNullOrEmpty(Model?.ExpertLevel) && Model.ExpertLevel == "Medium")
+                                {
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star-o"></i>
+                                }
+                                else if (!string.IsNullOrEmpty(Model?.ExpertLevel) && Model.ExpertLevel == "Expert")
+                                {
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                }
+                            }
+                        </span>
                     </p>
 
                     <hr>
@@ -36,9 +60,17 @@
 
 
                     <hr>
-
-                    <!-- Preview Image -->
-                    <img class="img-fluid rounded" src="http://placehold.it/900x300" alt="">
+                    
+                    @{
+                        if (!string.IsNullOrEmpty(Model?.PostCoverSmall))
+                        {
+                            <img class="card-img-top" src="~/images/@Model.PostCoverSmall" alt="Card image cap">
+                        }
+                        else
+                        {
+                            <img class="img-fluid rounded" src="http://placehold.it/900x300" alt="">
+                        }
+                    }
 
                     <hr>
 
@@ -70,7 +102,29 @@
                             <div class="media mb-4">
                                 <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
                                 <div class="media-body">
-                                    <h5 class="mt-0">@comment.Username</h5>
+                                    <h5 class="mt-0">
+                                    <a href="@Url.Action("Index", "Profile", new {id = comment.UserId})">@comment.Username</a>
+                                        @{
+                                            if (!string.IsNullOrEmpty(comment?.ExpertLevel) && comment.ExpertLevel == "Noob")
+                                            {
+                                                <i style="color: darkorange" class="fa fa-star"></i>
+                                                <i style="color: darkorange" class="fa fa-star-o"></i>
+                                                <i style="color: darkorange" class="fa fa-star-o"></i>
+                                            }
+                                            else if (!string.IsNullOrEmpty(comment?.ExpertLevel) && comment.ExpertLevel == "Medium")
+                                            {
+                                                <i style="color: darkorange" class="fa fa-star"></i>
+                                                <i style="color: darkorange" class="fa fa-star"></i>
+                                                <i style="color: darkorange" class="fa fa-star-o"></i>
+                                            }
+                                            else if (!string.IsNullOrEmpty(comment?.ExpertLevel) && comment.ExpertLevel == "Expert")
+                                            {
+                                                <i style="color: darkorange" class="fa fa-star"></i>
+                                                <i style="color: darkorange" class="fa fa-star"></i>
+                                                <i style="color: darkorange" class="fa fa-star"></i>
+                                            }
+                                        }
+                                    </h5>
                                     @comment.Description
                                 </div>
                             </div>
@@ -194,7 +248,6 @@
                 },
                 success: function (data) {
                     if (data.status === "Ok") {
-                        alert("ajax worked");
                         location.reload();
                     } else {
                         alert("ajax failed");

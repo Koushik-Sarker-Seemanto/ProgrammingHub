@@ -2,27 +2,33 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using DomainModels;
 using DomainModels.Post;
 using Entities;
+using LazZiya.ImageResize;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Services.Abstractions;
 
 namespace WebService.Controllers
 {
+    [Authorize]
     public class PostController : Controller
     {
         private readonly ILogger<PostController> _logger;
         private readonly IPostService _postService;
-        public PostController(ILogger<PostController> logger, IPostService postService)
+        private readonly IUploadService _uploadService;
+        public PostController(ILogger<PostController> logger, IPostService postService, IUploadService uploadService)
         {
             _logger = logger;
             _postService = postService;
+            _uploadService = uploadService;
         }
 
         [HttpGet]
@@ -53,7 +59,7 @@ namespace WebService.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateAsync(IFormCollection collection, PostModel model)
+        public async Task<ActionResult> CreateAsync(IFormFile file, PostModel model)
         {
             try
             {
@@ -67,6 +73,10 @@ namespace WebService.Controllers
                 if (authenticationInfo != null && authenticationInfo.Succeeded)
                 {
                     var userName = authenticationInfo.Principal.Claims.FirstOrDefault(e => e.Type == ClaimTypes.NameIdentifier)?.Value;
+                    var uploadSmall = this._uploadService.UploadImage(file, 750, 300);
+                    var uploadBig = this._uploadService.UploadImage(file, 900, 300);
+                    model.CoverSmall = uploadSmall;
+                    model.CoverBig = uploadBig;
                     var result = await this._postService.CreatePost(model, userName);
                     if (result.ResponseStatus != ResponseEnum.Ok)
                     {
@@ -77,8 +87,9 @@ namespace WebService.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(Exception e)
             {
+                this._logger.LogInformation("Error Occurred: ", e);
                 return View();
             }
         }

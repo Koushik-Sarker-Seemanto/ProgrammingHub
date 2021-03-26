@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using DnsClient.Internal;
 using DomainModels;
 using Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Services.Abstractions;
 
 namespace WebService.Controllers
 {
+    [Authorize]
     public class ProfileController : Controller
     {
         private readonly ILogger<ProfileController> logger;

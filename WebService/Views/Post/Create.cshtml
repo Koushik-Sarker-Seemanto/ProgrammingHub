@@ -14,7 +14,6 @@
 
 <style>
     .login-form {
-        width: 450px;
         margin: 50px auto;
         font-size: 15px;
     }
@@ -42,9 +41,9 @@
 </style>
 
 
-<div class="login-form">
+<div class="login-form col-md-9 col-sm-12">
     @Html.ValidationSummary(true, "", new { @class = "text-danger alert alert-danger" })
-    <form id="createForm" asp-action="Create" asp-controller="Post" method="post">
+    <form id="createForm" enctype="multipart/form-data" asp-action="Create" asp-controller="Post" method="post">
         @Html.AntiForgeryToken()
         <h2 class="text-center">Create Post</h2>
         <div class="form-group">
@@ -66,7 +65,7 @@
             <textarea type="text" asp-for="Description" rows="8" class="form-control" placeholder="Description" required="required"></textarea>
         </div>
         <div class="form-group">
-            <input type="file" class="form-control" placeholder="Image">
+            <input type="file" class="form-control" accept=".png, .jpg, .jpeg" id="file" name="file" placeholder="Image">
         </div>
         <div class="form-group">
             <button type="submit" class="btn btn-primary btn-block">Create</button>

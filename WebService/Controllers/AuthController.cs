@@ -23,10 +23,12 @@ namespace WebService.Controllers
     {
         private readonly ILogger<AuthController> _logger;
         private readonly IAuthService _authService;
-        public AuthController(ILogger<AuthController> logger, IAuthService authService)
+        private readonly IUploadService _uploadService;
+        public AuthController(ILogger<AuthController> logger, IAuthService authService, IUploadService uploadService)
         {
             _logger = logger;
             _authService = authService;
+            _uploadService = uploadService;
         }
         public ActionResult Index()
         {
@@ -90,7 +92,7 @@ namespace WebService.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RegisterAsync(RegisterModel registerModel)
+        public async Task<ActionResult> RegisterAsync(IFormFile file, RegisterModel registerModel)
         {
             // this._logger.LogInformation(JsonConvert.SerializeObject(registerModel));
             if (!ModelState.IsValid)
@@ -98,6 +100,8 @@ namespace WebService.Controllers
                 return View(registerModel);
             }
 
+            var profileImage = this._uploadService.UploadImage(file, 512, 512);
+            registerModel.ProfileImage = profileImage;
             var result = await this._authService.RegisterUser(registerModel);
             if (result.ResponseStatus != ResponseEnum.Ok)
             {

@@ -126,7 +126,10 @@ namespace Services
                 Description = model.Description,
                 UserId = user.Id,
                 Username = user.Username,
+                PostCoverBig = model.CoverBig,
+                PostCoverSmall = model.CoverSmall,
                 PostType = model.PostType,
+                ExpertLevel = user.Category,
                 Comments = new List<Comment>(),
             };
             await this._repository.SaveAsync<Post>(post);
@@ -178,6 +181,7 @@ namespace Services
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
                 CreatedAt = DateTime.Now,
+                ExpertLevel = user.Category,
             };
 
             if (post.Comments.Equals(null) || !post.Comments.Any())
