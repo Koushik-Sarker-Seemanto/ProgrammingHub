@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using LazZiya.ImageResize;
 using Microsoft.AspNetCore.Http;
@@ -17,26 +18,37 @@ namespace Services
             _logger = logger;
         }
 
-        public string UploadImage(IFormFile file, int height, int width)
+        public string UploadImage(IFormFile file, int height, int width, string rootPath)
         {
-            if (file.Length > 0)
+            try
             {
-                this._logger.LogInformation($"UploadImage Started");
-                Image uploadedImage;
-                using (var stream = file.OpenReadStream())
+                if (file.Length > 0)
                 {
-                    uploadedImage = Image.FromStream(stream);
+                    this._logger.LogInformation($"UploadImage Started");
+                    Image uploadedImage;
+                    using (var stream = file.OpenReadStream())
+                    {
+                        this._logger.LogInformation($"UploadImage OpenReadStream");
+                        uploadedImage = Image.FromStream(stream);
+                    }
+                    string phrase = file.FileName;
+                    this._logger.LogInformation($"UploadImage FileName: {phrase}");
+                    string[] words = phrase.Split('.');
+                    var img = this.ScaleImage(uploadedImage, height, width);
+
+                    var imgPath = Guid.NewGuid().ToString() + "." + words[1];
+
+                    this._logger.LogInformation($"Going to save image at wwwroot/images/{ imgPath}");
+                    var path = Path.Combine(rootPath, imgPath);
+                    img.SaveAs($"{path}");
+                    return imgPath;
+
                 }
-                string phrase = file.FileName;
-                string[] words = phrase.Split('.');
-                var img = this.ScaleImage(uploadedImage, height, width);
-
-                var imgPath = Guid.NewGuid().ToString() + "." + words[1];
-
-                this._logger.LogInformation($"Going to save image at wwwroot/images/{ imgPath}");
-                img.SaveAs($"wwwroot/images/{imgPath}");
-                return imgPath;
-
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"UploadImage Exception: {e}");
+                throw;
             }
 
             return "";
@@ -48,6 +60,7 @@ namespace Services
             var newImage = new Bitmap(maxHeight, maxWeight);
             using (var g = Graphics.FromImage(newImage))
             {
+                this._logger.LogInformation("ScaleImage Drawing Image");
                 g.DrawImage(image, 0, 0, maxHeight, maxWeight);
             }
             return newImage;

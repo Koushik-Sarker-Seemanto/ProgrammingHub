@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Services.Abstractions;
+using System.Web;
+using Microsoft.AspNetCore.Hosting;
 
 namespace WebService.Controllers
 {
@@ -24,11 +27,13 @@ namespace WebService.Controllers
         private readonly ILogger<PostController> _logger;
         private readonly IPostService _postService;
         private readonly IUploadService _uploadService;
-        public PostController(ILogger<PostController> logger, IPostService postService, IUploadService uploadService)
+        private readonly IWebHostEnvironment webHostEnvironment;
+        public PostController(ILogger<PostController> logger, IPostService postService, IUploadService uploadService, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             _postService = postService;
             _uploadService = uploadService;
+            this.webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -73,8 +78,9 @@ namespace WebService.Controllers
                 if (authenticationInfo != null && authenticationInfo.Succeeded)
                 {
                     var userName = authenticationInfo.Principal.Claims.FirstOrDefault(e => e.Type == ClaimTypes.NameIdentifier)?.Value;
-                    var uploadSmall = this._uploadService.UploadImage(file, 750, 300);
-                    var uploadBig = this._uploadService.UploadImage(file, 900, 300);
+                    var rootPath = Path.Combine(webHostEnvironment.WebRootPath, "images");
+                    var uploadSmall = this._uploadService.UploadImage(file, 750, 300, rootPath);
+                    var uploadBig = this._uploadService.UploadImage(file, 900, 300, rootPath);
                     model.CoverSmall = uploadSmall;
                     model.CoverBig = uploadBig;
                     var result = await this._postService.CreatePost(model, userName);

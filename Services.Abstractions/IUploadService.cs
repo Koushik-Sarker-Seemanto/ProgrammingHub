@@ -7,6 +7,6 @@ namespace Services.Abstractions
 {
     public interface IUploadService
     {
-        public string UploadImage(IFormFile file, int height, int width);
+        public string UploadImage(IFormFile file, int height, int width, string rootPath);
     }
 }

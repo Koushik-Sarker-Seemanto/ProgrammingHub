@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson.IO;
 using Services.Abstractions;
@@ -24,11 +26,13 @@ namespace WebService.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly IAuthService _authService;
         private readonly IUploadService _uploadService;
-        public AuthController(ILogger<AuthController> logger, IAuthService authService, IUploadService uploadService)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public AuthController(ILogger<AuthController> logger, IAuthService authService, IUploadService uploadService, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             _authService = authService;
             _uploadService = uploadService;
+            _webHostEnvironment = webHostEnvironment;
         }
         public ActionResult Index()
         {
@@ -100,7 +104,8 @@ namespace WebService.Controllers
                 return View(registerModel);
             }
 
-            var profileImage = this._uploadService.UploadImage(file, 512, 512);
+            var rootPath = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+            var profileImage = this._uploadService.UploadImage(file, 512, 512, rootPath);
             registerModel.ProfileImage = profileImage;
             var result = await this._authService.RegisterUser(registerModel);
             if (result.ResponseStatus != ResponseEnum.Ok)
